@@ -26,3 +26,8 @@ logs/
 .DS_Store
 .vscode/
 .vscode-server/
+
+
+signed_test.cbor
+tampered_test.cbor
+tools_make_signed_cbor.py
