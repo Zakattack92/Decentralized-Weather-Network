@@ -31,3 +31,8 @@ logs/
 signed_test.cbor
 tampered_test.cbor
 tools_make_signed_cbor.py
+
+# local test artifacts
+signed_test.cbor
+tampered_test.cbor
+tools_make_signed_cbor.py
