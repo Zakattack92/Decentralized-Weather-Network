@@ -126,6 +126,8 @@ def ingest_v1():
         (raw, row["id"]),
       )
       packet_id = row["id"]
+      db.execute("DELETE FROM samples WHERE packet_id=?", (packet_id,))
+
     else:
       # already accepted => true duplicate
       return jsonify({"ok": True, "accepted_samples": 0, "note": "duplicate_packet"}), 200
@@ -146,11 +148,21 @@ def ingest_v1():
     except Exception:
       continue
 
-    db.execute(
-      "INSERT INTO samples (device_id, packet_id, sample_ts, event_flags, sensor_bitmask, sensor_values_json) VALUES (?, ?, ?, ?, ?, ?)",
-      (device_id, packet_id, sample_ts, event_flags, str(sensor_bitmask), json.dumps(sensor_values, separators=(",", ":"))),
-    )
+  cur2 = db.execute(
+    "INSERT OR IGNORE INTO samples (device_id, packet_id, sample_ts, event_flags, sensor_bitmask, sensor_values_json) "
+    "VALUES (?, ?, ?, ?, ?, ?)",
+    (
+      device_id,
+      packet_id,
+      sample_ts,
+      event_flags,
+      str(sensor_bitmask),
+      json.dumps(sensor_values, separators=(",", ":")),
+    ),
+  )
+  if cur2.rowcount == 1:
     accepted += 1
+
 
   db.commit()
 
